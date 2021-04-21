@@ -73,6 +73,7 @@ def esNumerico(cadena):
             return True and esNumerico(cadena=cadena[1:])
         else:
             return False
+
 #------------------------------------------------------------------------------------------------------------------------------------------------            
 """
 Nombre: Abre el archivo claves
@@ -209,8 +210,8 @@ Nombre: Mantenimiento de empresa
 def Gestiondeempresa():
     print("\n")
     print("--------------Gestión  de empresas-----------------------\n")
-    print("1-Incluir empresa\n2-Eliminar Empresa\n3-Modificar Viajes\n4-Mostrar todos los viajes\n5-Retonar a menú principal\n")
-    opcion=input("Digite una opción:   ")
+    print("1-Incluir empresa\n2-Eliminar Empresa\n3-Modificar Viajes\n4-Mostrar todos los viajes\n5-Cantidad de empresas registradas posees\n6-Retonar a menú principal")
+    opcion=input("\nDigite una opción:   ")
     viaje=open("Empresas.txt")
     viaje1=viaje.readlines()
     viaje.close()
@@ -224,7 +225,9 @@ def Gestiondeempresa():
             return modificarEmpresa(cedula)
         elif opcion=="4":
             return mostrarviajes()
-        elif  opcion=="5":
+        elif opcion =="5":
+            return cantidadDeviajes()
+        elif  opcion=="6":
             return menuAdministrativo()
         else:
             print("Ningúna opción es correcta")
@@ -249,7 +252,7 @@ Nombre: Agregar empresa de viaje
 """
 def IncluirEmpresa():
     print("\n")
-    print("----------Bienvenido--------------")
+    print("----------AGREGANDO EMPRESA--------------")
     cedula=input("Ingrese la cedula juridica:  ")
     nombre=input("Ingrese el nombre de la empresa de viajes:  ")
     ubicacion=input("Ingrese la ubicación de la empresa:   ")
@@ -262,9 +265,9 @@ def agregarEmpresa(cedula,nombre,ubicacion):
     if(validarC):
         viaje=open("Empresas.txt","a")
         #comienzo agregar los datos
-        viaje.write(cedula+"\n")
-        viaje.write(nombre +"\n")
-        viaje.write(ubicacion+"\n")
+        viaje.write("Cedula: "+cedula+"\n")
+        viaje.write("Nombre de la empresa: "+nombre +"\n")
+        viaje.write("Ubicación de la empresa: "+ubicacion+"\n")
         viaje.write("-------------------------------------"+"\n")
         viaje.close()
         print("Empresa agregada con exito")
@@ -283,18 +286,37 @@ def eliminarempresa(viaje2,indice,contador):
         print(viaje2[indice].strip())
         viaje2.pop(indice)
         return eliminarempresa(viaje2,indice,contador+1)
+
+def Eliminar2(viaje1,indice,cont,nombre):
+    if cont >0:
+        return convertirstr(nombre)
+    else:
+        nombre=[viaje1[indice].rstrip()]
+        return Eliminar2(viaje1,indice,cont+1,nombre)
     
 def  EliminarEmpresa():
+    viaje=open("Empresas.txt")
+    viaje1=viaje.readlines()
     cedula=input("Digite la cédula juridica: ")
-    return EliminarEmpresa_aux(cedula)
+    transporte=open("Transporte.txt")
+    transporte1=transporte.readlines()
+    indice=viaje1.index("Cedula: "+cedula+"\n")
+    verificar= Eliminar2(viaje1,indice+1,0,[])
+    print(verificar)
+    if ((verificar +"\n") in transporte1 ) ==False:
+        return EliminarEmpresa_aux(cedula)
+    else:
+        print("\nLa empresa se encuentra asociada a un transporte")
+        return Gestiondeempresa()
+        
 
 def EliminarEmpresa_aux(cedula):
     viaje=open("Empresas.txt")
     viaje2=viaje.readlines()
     if(seEncuentra(cedula+ "\n", viaje2)):
         print("-------------------------------------------------------")
-        print("Eliminando Empresa")
-        indice=viaje2.index(cedula+"\n")
+        print("Eliminando Empresa\n")
+        indice=viaje2.index("Cedula: "+cedula+"\n")
         viaje2=eliminarempresa(viaje2,indice,0)
         viaje.close()
         viaje=open("Empresas.txt","w")
@@ -320,13 +342,13 @@ def mostrarEmpresa(viaje1, indice, cont):
         print("-----------------------------")
     else:
         if(cont==0):
-            print("Cédula",viaje1[indice][0:-1])
+            print(viaje1[indice][0:-1])
             return mostrarEmpresa(viaje1, indice + 1, cont + 1)
         elif(cont ==1):
-            print("Empresa:",viaje1[indice][0:-1])
+            print(viaje1[indice][0:-1])
             return mostrarEmpresa(viaje1,indice +1,cont+1)
         else:
-            print("Ubicación:",viaje1[indice][0:-1])
+            print(viaje1[indice][0:-1])
             return mostrarEmpresa(viaje1,indice +1 ,cont+1)
 #------------------------------------------------------------------------------------------------------------------------------------------------
 """
@@ -335,9 +357,9 @@ Nombre: Para modificar los nombres de las empresas
 def modificarEmpresa(cedula):
     viaje1= Empresa()
     if (seEncuentra(cedula + "\n", viaje1)):
-        indice = viaje1.index(cedula +"\n")
         print("\n")
-        print("Información del contacto seleccionado")
+        print("Información del contacto seleccionado\n")
+        indice = viaje1.index("Cedula: "+cedula + "\n")
         mostrarEmpresa(viaje1, indice, 0)
         EmpresaM= modificarEmpresaA(viaje1, indice + 1, 0)
         viaje = open("Empresas.txt", "w")
@@ -354,12 +376,12 @@ def modificarEmpresaA(viaje, indice, cont):
         return viaje
     else:
         if cont == 0:
-            nuevaInformación = input("Escribe el nuevo nombre de la empresa : ")
-            viaje[indice] = nuevaInformación + "\n"
+            nuevaInformación = input("Escribe el nuevo nombre de la empresa:  ")
+            viaje[indice] ="Nombre de la empresa: "+ nuevaInformación + "\n"
             return modificarEmpresaA(viaje, indice+1, cont+1)
         elif cont == 1:
             nuevaInformación1= input("Escribe la nueva dirección de la empresa: ")
-            viaje[indice] = nuevaInformación1 + "\n"
+            viaje[indice] ="Ubicación de empresa: "+nuevaInformación1 + "\n"
             return modificarEmpresaA(viaje, indice+1, cont+1)
 #------------------------------------------------------------------------------------------------------------------------------------------------
 """
@@ -367,11 +389,29 @@ Nombre: Mostrar todos los viajes
 """
 def mostrarviajes():
     print("\n")
-    print("-----------VIENDO TODAS LAS EMPRESAS-----------")
+    print("-----------VIENDO TODAS LAS EMPRESAS-----------\n")
     viaje = open("Empresas.txt", "r")
     print(viaje.read())
     input("Estos son todos tus viajes.\nPresiona enter para volver a mantenimiento de contactos...")
     return Gestiondeempresa()
+#------------------------------------------------------------------------------------------------------------------------------------------------
+"""
+Muestra la cantidad de empresas registradas
+"""
+
+def cantidadDeviajes():
+    print("-----------TOTAL DE EMPRESAS-----------\n")
+    viaje = open("Empresas.txt")
+    viaje1 = viaje.readlines()
+    print(
+        f"Tienes {int(cantidadDeindices(viaje1)/4)} empresas en total.")
+    viaje.close()
+    input("\nPresiona enter para volver al menú principal...")
+    return Gestiondeempresa()
+
+
+
+
 #------------------------------------------------------------------------------------------------------------------------------------------------
 """
 Funcion: Mostrar las funciones del Menu de gestion de transporte por empresa
@@ -379,8 +419,8 @@ Nombre: Gestion de transporte por empresa
 """
 def GestionDetransEmpresa():
     print("\nBIENVENIDO AL MENU DE GESTIÓN DE TRANSPORTE POR EMPRESA\n")
-    print("1-Agregar Transporte\n2-Eliminar Transporte\n3-Modificar Transporte\n4-Mostrar Todos los transportes\n5-Retonar a Menú Administrativo\n")
-    opcion=input("Digite una de las opciones: ")
+    print("1-Agregar Transporte\n2-Eliminar Transporte\n3-Modificar Transporte\n4-Mostrar Todos los transportes\n5-Cantidad de transportes registrados\n6-Cantidad de asientos VIP registrados\n7-Cantidad de asientos clase normal registrados\n8-Cantidad de asientos económicos registrados\n9-Retonar a Menú Administrativo")
+    opcion=input("\nDigite una de las opciones: ")
     if (esValido(opcion)):
         if (opcion=="1"):
             return agregarTransporte()
@@ -391,7 +431,15 @@ def GestionDetransEmpresa():
             return ModificarTransporte(placa)
         elif(opcion=="4"):
             return MostrarTodostranspo()
-        elif(opcion=="5"):
+        elif (opcion =="5"):
+            return cantidadDetransporte()
+        elif (opcion =="6"):
+            return cantidadDeVIP()
+        elif(opcion =="7"):
+            return cantidadDenormal()
+        elif( opcion =="8"):
+            return cantidadDeeconomico()
+        elif(opcion=="9"):
             return menuAdministrativo
         else:
             print("Ningúna opción es correcta")
@@ -404,31 +452,59 @@ def validarPlaca( placa,transporte1):
         if(cantidadDeindices(placa) == 6 and isinstance(int(placa), int)):
             return True
         else:
-            print("ERROR\nLa cédula no contiene 10 dígitos exactos")
+            print("ERROR\nLa placa no contiene 6 dígitos exactos")
             return GestionDetransEmpresa()
 
 def agregarTransporte():
     print("\n")
-    print("----------Bienvenido--------------")
+    print("----------AGREGANDO TRANSPORTE--------------")
     placa=input("Ingrese la placa del transporte:  ")
+    if placa=="":
+        print("La información es vacio")
+        return agregarTransporte()
     marca=input("Ingrese la marca del transporte:  ")
+    if marca=="":
+        print("La información es vacio")
+        return agregarTransporte()
     modelo=input("Ingrese el modelo del transporte:   ")
+    if modelo=="":
+        print("La información es vacio")
+        return agregarTransporte()
     ano=input("Digite el año de distribución del transporte: ")
+    if ano =="":
+        print("La información es vacio")
+        return agregarTransporte()
     empresa=input("Digite el nombre de la empresa donde esta asociado el transporte: ")
-    asiento=input("Digite el asiento que desee: Clase VIP, Clase normal, Clase económica: ")
-    return agregarTransporte1(placa,marca,modelo,ano,empresa,asiento)
+    if empresa =="":
+        print("La información es vacio")
+        return agregarTransporte()
+    vip=input("Digite cúantos asientos VIP tiene: ")
+    if vip=="":
+        print("La información es vacio")
+        return agregarTransporte()
+    normal=input("Digite cúantos asientos de clase normal tiene: ")
+    if normal =="":
+        print("La información es vacio")
+        return agregarTransporte()
+    economico=input("Digite cúantos asientos de clase económico tiene: ")
+    if economico=="":
+        return agregarTransporte()
+    return agregarTransporte1(placa,marca,modelo,ano,empresa,vip,normal,economico)
 
-def agregarTransporte1(placa,marca,modelo,ano,empresa,asiento):
+def agregarTransporte1(placa,marca,modelo,ano,empresa,vip,normal,economico):
+    
     transporte1=transportes()
     validarP=validarPlaca(placa,transporte1)
     if(validarP):
         transporte=open("Transporte.txt","a")
-        transporte.write(placa+"\n")
-        transporte.write(marca +"\n")
-        transporte.write(modelo+"\n")
-        transporte.write(ano+"\n")
-        transporte.write(empresa+"\n")
-        transporte.write(asiento+"\n")
+        transporte.write("Placa:"+placa+"\n")
+        transporte.write("Marca:"+marca +"\n")
+        transporte.write("Modelo:"+modelo+"\n")
+        transporte.write("Año:"+ano+"\n")
+        transporte.write("Nombre de la empresa: "+empresa+"\n")
+        transporte.write("Asientos VIP:"+vip+"\n")
+        transporte.write("Asientos clase normal:"+normal+"\n")
+        transporte.write("Asientos económicos:"+economico+"\n")
         transporte.write("-------------------------------------"+"\n")
         transporte.close()
         print("Transporte agregada con exito")
@@ -438,24 +514,44 @@ def agregarTransporte1(placa,marca,modelo,ano,empresa,asiento):
         return GestionDetransEmpresa()
 #------------------------------------------------------------------------------------------
 def eliminarTransporte(transporte1,indice,cont):
-    if cont==7:
+    if cont==8:
         return convertirstr(transporte1)
     else:
         print(transporte1[indice].strip())
         transporte1.pop(indice)
         return eliminarTransporte(transporte1,indice,cont+1)
+
+def verificarT(transporte1,indice,cont,nombre):
+    if cont > 0:
+        return convertirstr(nombre)
+    else:
+        nombre+=[transporte1[indice].rstrip()]
+        return verificarT (transporte1,indice,cont+1,nombre)
+    
+
     
 def  EliminarTransporte():
+    transporte=open("Transporte.txt")
+    transporte1=transporte.readlines()
     placa=input("Digite la placa del transporte: ")
-    return EliminarTransporte_aux(placa)
+    viaje=open("Empresas.txt")
+    viaje1=viaje.readlines()
+    indice=transporte1.index("Placa: "+placa+"\n")
+    verificarP=verificarT(transporte1,indice+1,0,[])
+    if (verificarP +"\n" in viaje1) ==False:
+        return EliminarTransporte_aux(placa)
+    else:
+        print("\nEl transporte se encuentra registrado en una empresa")
+        return GestionDetransEmpresa()
 
 def EliminarTransporte_aux(placa):
     transporte=open("Transporte.txt")
     transporte1=transporte.readlines()
-    if(seEncuentra(placa+ "\n", transporte1)):
+    if(seEncuentra(placa+"\n", transporte1)):
         print("-------------------------------------------------------")
-        print("Eliminando Transporte")
-        indice=transporte1.index(placa+"\n")
+        print("Eliminando Transporte\n")
+        placa=str(placa)
+        indice=transporte1.index("Placa:"+placa+"\n")
         transporte1=eliminarTransporte(transporte1,indice,0)
         transporte.close()
         transporte=open("Transporte.txt","w")
@@ -476,29 +572,82 @@ def MostrarTodostranspo():
     print(transporte.read())
     input("Estos son todos tus transportes.\nPresiona enter para volver a mantenimiento de contactos...")
     return GestionDetransEmpresa()
+
+#------------------------------------------------------------------------------------------
+def cantidadDetransporte():
+    print("-----------TOTAL DE TRANSPORTE-----------\n")
+    transporte= open("Transporte.txt")
+
+    transporte1 = transporte.readlines()
+    print(
+        f"Tienes {int(cantidadDeindices(transporte1)/8)} transportes en total.")
+    transporte.close()
+    input("\nPresiona enter para volver al menú principal...")
+    return GestionDetransEmpresa()
+#------------------------------------------------------------------------------------------
+def cantidadDeVIP():
+    print("-----------TOTAL DE ASIENTOS VIP-----------\n")
+    transporte= open("Transporte.txt")
+
+    transporte1 = transporte.readlines()
+    print(
+        f"Tienes {int(cantidadDeindices(transporte1)/7)}  asientos VIP")
+    transporte.close()
+    input("\nPresiona enter para volver al menú principal...")
+    return GestionDetransEmpresa()
+
+def cantidadDenormal():
+    print("-----------TOTAL DE ASIENTOS CLASE NORMAL-----------\n")
+    transporte= open("Transporte.txt")
+
+    transporte1 = transporte.readlines()
+    print(
+        f"Tienes {int(cantidadDeindices(transporte1)/7)} asientos clase normal")
+    transporte.close()
+    input("\nPresiona enter para volver al menú principal...")
+    return GestionDetransEmpresa()
+
+def cantidadDeeconomico():
+    print("-----------TOTAL DE ASIENTOS ECONÓMICOS-----------\n")
+    transporte= open("Transporte.txt")
+
+    transporte1 = transporte.readlines()
+    print(
+        f"Tienes {int(cantidadDeindices(transporte1)/7)}  asientos económicos")
+    transporte.close()
+    input("\nPresiona enter para volver al menú principal...")
+    return GestionDetransEmpresa()
+
 #------------------------------------------------------------------------------------------
 def mostrarTransporte(transporte1, indice, cont):
-    if cont > 5:
+    if cont > 7:
         return True
     else:
         if(cont==0):
-            print("Placa:",transporte1[indice][0:-1])
+            print(transporte1[indice][0:-1])
             return mostrarTransporte(transporte1, indice + 1, cont + 1)
         elif(cont ==1):
-            print("Marca:",transporte1[indice][0:-1])
+            print(transporte1[indice][0:-1])
             return mostrarTransporte(transporte1,indice +1,cont+1)
         elif(cont ==2):
-            print("Modelo:",transporte1[indice][0:-1])
+            print(transporte1[indice][0:-1])
             return mostrarTransporte(transporte1,indice +1 ,cont+1)
         elif(cont==3):
-            print("Año del vehiculo:",transporte1[indice][0:-1])
+            print(transporte1[indice][0:-1])
             return mostrarTransporte(transporte1,indice+1,cont+1)
         elif(cont==4):
-            print("Empresa:",transporte1[indice][0:-1])
+            print(transporte1[indice][0:-1])
+            return mostrarTransporte(transporte1,indice+1,cont+1)
+        elif(cont==5):
+            print(transporte1[indice][0:-1])
+            return mostrarTransporte(transporte1,indice+1,cont+1)
+        elif(cont==6):
+            print(transporte1[indice][0:-1])
             return mostrarTransporte(transporte1,indice+1,cont+1)
         else:
-            print("Tipo de asiento:",transporte1[indice][0:-1])
+            print(transporte1[indice][0:-1])
             return mostrarTransporte(transporte1,indice+1,cont+1)
+        
 #------------------------------------------------------------------------------------------------------------------------------------------------
 """
 Nombre: Para modificar los nombres de las empresas 
@@ -508,7 +657,7 @@ def ModificarTransporte(placa):
     if (seEncuentra(placa + "\n",transporte1)):
         print("\n")
         print("Información del transporte seleccionado\n")
-        indice = transporte1.index(placa + "\n")
+        indice = transporte1.index("Placa:"+placa + "\n")
         mostrarTransporte(transporte1, indice, 0)
         transporteM= modificarTransporteA(transporte1, indice + 1, 0)
         transporte = open("Transporte.txt", "w")
@@ -521,29 +670,38 @@ def ModificarTransporte(placa):
         return GestionDetransEmpresa()
 
 def modificarTransporteA(transporte1, indice, cont):
-    if cont == 5:
+    if cont == 7:
         return transporte1 
     else:
         if cont == 0:
             marca= input("\nDigite la nueva marca: ")
-            transporte1[indice] =marca + "\n"
+            transporte1[indice] = "Marca: "+marca + "\n"
             return modificarTransporteA(transporte1, indice+1, cont+1)
         elif cont == 1:
             modelo= input("Digite el nuevo modelo: ")
-            transporte1[indice] = modelo + "\n"
+            transporte1[indice] = "Modelo: "+modelo + "\n"
             return modificarTransporteA(transporte1, indice+1, cont+1)
         elif cont ==2:
             ano=input("Digite el año de transporte: ")
-            transporte1[indice]=ano + "\n"
+            transporte1[indice]="Año: "+ano + "\n"
             return modificarTransporteA(transporte1,indice+1,cont+1)
         elif cont == 3:
             empresa = input("Digite la empresa asociadad: ")
-            transporte1[indice] = empresa + "\n"
+            transporte1[indice] = "Empresa: "+empresa + "\n"
+            return modificarTransporteA(transporte1,indice+1,cont+1)
+        elif cont==4:
+            vip=input("Cantidad de asientos VIP: ")
+            transporte1[indice]="Asientos VIP:"+vip+"\n"
+            return modificarTransporteA(transporte1,indice+1,cont+1)
+        elif cont==5:
+            normal=input("Cantidad de asientos clase  normal: ")
+            transporte1[indice]="Asientos clase normal:"+normal+"\n"
             return modificarTransporteA(transporte1,indice+1,cont+1)
         else:
-            asiento=input("Digite el tipo de asiento: ")
-            transporte1[indice]=asiento+"\n"
+            economico=input("Cantidad de asientos económicos: ")
+            transporte1[indice]="Asientos económicos:"+economico+"\n"
             return modificarTransporteA(transporte1,indice+1,cont+1)
+        
 
 
         
